@@ -1,0 +1,293 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>gphe package &#8212; GenomicsPHE 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="gphe-package">
+<h1>gphe package<a class="headerlink" href="#gphe-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-gphe.vecphe">
+<span id="gphe-vecphe-module"></span><h2>gphe.vecphe module<a class="headerlink" href="#module-gphe.vecphe" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="gphe.vecphe.fmatDec">
+<code class="descclassname">gphe.vecphe.</code><code class="descname">fmatDec</code><span class="sig-paren">(</span><em>prv</em>, <em>EM</em>, <em>base=128</em>, <em>block=128</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gphe/vecphe.html#fmatDec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gphe.vecphe.fmatDec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrypt a matrix of numbers using fast Pallier Encryption</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>prv</strong> (<code class="xref py py-obj docutils literal"><span class="pre">PaillierPrivateKey</span></code>) – The private key</li>
+<li><strong>EM</strong> (<code class="xref py py-obj docutils literal"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal"><span class="pre">EncryptedNumber</span></code> with shape) – (d x n) where d is dimensions and n is samples</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>M</strong> – The decrypted matrix</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-obj docutils literal"><span class="pre">ndarray</span></code> of int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gphe.vecphe.fmatEnc">
+<code class="descclassname">gphe.vecphe.</code><code class="descname">fmatEnc</code><span class="sig-paren">(</span><em>pub</em>, <em>M</em>, <em>base=128</em>, <em>block=128</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gphe/vecphe.html#fmatEnc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gphe.vecphe.fmatEnc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypt a matrix of numbers using fast Pallier Encryption</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pub</strong> (<code class="xref py py-obj docutils literal"><span class="pre">PaillierPublicKey</span></code>) – The public key</li>
+<li><strong>M</strong> (<code class="xref py py-obj docutils literal"><span class="pre">ndarray</span></code> of shape (d x n) of int) – The matrix to encrypt</li>
+<li><strong>base</strong> (<em>int</em>) – The base of the new number representations</li>
+<li><strong>block</strong> (<em>int</em>) – The block size used to split V</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>EM</strong> – The encrypted numbers matrix</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal"><span class="pre">EncryptedNumber</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gphe.vecphe.fvecDec">
+<code class="descclassname">gphe.vecphe.</code><code class="descname">fvecDec</code><span class="sig-paren">(</span><em>prv</em>, <em>E</em>, <em>base=128</em>, <em>block=128</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gphe/vecphe.html#fvecDec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gphe.vecphe.fvecDec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrypt a vector of numbers using fast Pallier Encryption</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>prv</strong> (<code class="xref py py-obj docutils literal"><span class="pre">PaillierPrivateKey</span></code>) – The private key</li>
+<li><strong>EV</strong> (<code class="xref py py-obj docutils literal"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal"><span class="pre">EncryptedNumber</span></code>) – The vector to decrypt</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>V</strong> – The decrypted numbers</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code> of int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gphe.vecphe.fvecEnc">
+<code class="descclassname">gphe.vecphe.</code><code class="descname">fvecEnc</code><span class="sig-paren">(</span><em>pub</em>, <em>V</em>, <em>base=128</em>, <em>block=128</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gphe/vecphe.html#fvecEnc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gphe.vecphe.fvecEnc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypt a vector of numbers using fast Pallier Encryption</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pub</strong> (<code class="xref py py-obj docutils literal"><span class="pre">PaillierPublicKey</span></code>) – The public key</li>
+<li><strong>V</strong> (<code class="xref py py-obj docutils literal"><span class="pre">list</span></code> of int) – The vector to encrypt</li>
+<li><strong>base</strong> (<em>int</em>) – The base of the new number representations</li>
+<li><strong>block</strong> (<em>int</em>) – The block size used to split V</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Ns</strong> – The encrypted numbers, where each number represents a block</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal"><span class="pre">EncryptedNumber</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gphe.vecphe.matDec">
+<code class="descclassname">gphe.vecphe.</code><code class="descname">matDec</code><span class="sig-paren">(</span><em>prv</em>, <em>EM</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gphe/vecphe.html#matDec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gphe.vecphe.matDec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrypt a matrix of numbers using standard Pallier Encryption</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>prv</strong> (<code class="xref py py-obj docutils literal"><span class="pre">PaillierPrivateKey</span></code>) – The private key</li>
+<li><strong>EM</strong> (<code class="xref py py-obj docutils literal"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal"><span class="pre">EncryptedNumber</span></code> with shape) – (d x n) where d is dimensions and n is samples</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>M</strong> – The decrypted matrix</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-obj docutils literal"><span class="pre">ndarray</span></code> of int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gphe.vecphe.matEnc">
+<code class="descclassname">gphe.vecphe.</code><code class="descname">matEnc</code><span class="sig-paren">(</span><em>pub</em>, <em>M</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gphe/vecphe.html#matEnc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gphe.vecphe.matEnc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypt a matrix of numbers using standard Pallier Encryption</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pub</strong> (<code class="xref py py-obj docutils literal"><span class="pre">PaillierPublicKey</span></code>) – The public key</li>
+<li><strong>M</strong> (<code class="xref py py-obj docutils literal"><span class="pre">ndarray</span></code> of shape (d x n) of int) – The matrix to encrypt</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>EM</strong> – The encrypted numbers matrix</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal"><span class="pre">EncryptedNumber</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gphe.vecphe.vecDec">
+<code class="descclassname">gphe.vecphe.</code><code class="descname">vecDec</code><span class="sig-paren">(</span><em>prv</em>, <em>EV</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gphe/vecphe.html#vecDec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gphe.vecphe.vecDec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrypt a vector of numbers using standard Pallier Encryption</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>prv</strong> (<code class="xref py py-obj docutils literal"><span class="pre">PaillierPrivateKey</span></code>) – The private key</li>
+<li><strong>EV</strong> (<code class="xref py py-obj docutils literal"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal"><span class="pre">EncryptedNumber</span></code>) – The vector to decrypt</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>V</strong> – The decrypted numbers</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code> of int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gphe.vecphe.vecEnc">
+<code class="descclassname">gphe.vecphe.</code><code class="descname">vecEnc</code><span class="sig-paren">(</span><em>pub</em>, <em>V</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gphe/vecphe.html#vecEnc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gphe.vecphe.vecEnc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypt a vector of numbers using standard Pallier Encryption</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pub</strong> (<code class="xref py py-obj docutils literal"><span class="pre">PaillierPublicKey</span></code>) – The public key</li>
+<li><strong>V</strong> (<code class="xref py py-obj docutils literal"><span class="pre">list</span></code> of int) – The vector to encrypt</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>EV</strong> – The encrypted numbers</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-obj docutils literal"><span class="pre">list</span></code> of <code class="xref py py-obj docutils literal"><span class="pre">EncryptedNumber</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-gphe">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-gphe" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Ryan Marren and John Wilson.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/source/gphe.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
