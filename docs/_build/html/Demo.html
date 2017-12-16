@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Welcome to GenomicsPHE’s documentation! &#8212; GenomicsPHE 0.1 documentation</title>
+    <title>Fast Paillier &#8212; GenomicsPHE 0.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -39,22 +39,10 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="welcome-to-genomicsphe-s-documentation">
-<h1>Welcome to GenomicsPHE’s documentation!<a class="headerlink" href="#welcome-to-genomicsphe-s-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-</div>
-</div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
-</ul>
-<div class="section" id="fast-paillier">
-<h2>Fast Paillier<a class="headerlink" href="#fast-paillier" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="fast-paillier">
+<h1>Fast Paillier<a class="headerlink" href="#fast-paillier" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction-to-the-paillier-cryptosystem">
-<h3>Introduction to the Paillier Cryptosystem<a class="headerlink" href="#introduction-to-the-paillier-cryptosystem" title="Permalink to this headline">¶</a></h3>
+<h2>Introduction to the Paillier Cryptosystem<a class="headerlink" href="#introduction-to-the-paillier-cryptosystem" title="Permalink to this headline">¶</a></h2>
 <p>The Paillier cryptosystem is an probabilistic asymmetric algorithm for
 public key cryptography, designed in 1999 by Pascal Paillier.</p>
 <p>This cryptosystem has the important property that it is homomorphic in
@@ -81,7 +69,7 @@ compute
 and obtain the correct mean value.</p>
 </div>
 <div class="section" id="vector-operations-with-paillier">
-<h3>Vector Operations with Paillier<a class="headerlink" href="#vector-operations-with-paillier" title="Permalink to this headline">¶</a></h3>
+<h2>Vector Operations with Paillier<a class="headerlink" href="#vector-operations-with-paillier" title="Permalink to this headline">¶</a></h2>
 <p>Suppose <span class="math">\(x \in \mathbb{Z}^D\)</span> is a <span class="math">\(D\)</span>-dimensional vector. We
 can extend the Paillier cryptosystem to do some structure preserving
 operations on vectors.</p>
@@ -102,7 +90,7 @@ Finally, Alice can decrypt <span class="math">\(D_s(E_p(\vec{\mu})) = \vec{\mu}\
 get the result.</p>
 </div>
 <div class="section" id="inefficiencies-with-small-messages">
-<h3>Inefficiencies with Small Messages<a class="headerlink" href="#inefficiencies-with-small-messages" title="Permalink to this headline">¶</a></h3>
+<h2>Inefficiencies with Small Messages<a class="headerlink" href="#inefficiencies-with-small-messages" title="Permalink to this headline">¶</a></h2>
 <p>The encryption operation <span class="math">\(E_p(m)\)</span> in the Paillier cryptosystem is
 explicitely <span class="math">\(E_p(m) = g^m r^n \mod n^2\)</span> where
 <span class="math">\(g \in \mathbb{Z}_{n^2}^*\)</span> and <span class="math">\(r \in \mathbb{Z}\)</span> is a
@@ -182,7 +170,7 @@ where <span class="math">\(D\)</span> is in the millions and <span class="math">
 going to finish any time soon.</p>
 </div>
 <div class="section" id="speeding-things-up">
-<h3>Speeding Things Up<a class="headerlink" href="#speeding-things-up" title="Permalink to this headline">¶</a></h3>
+<h2>Speeding Things Up<a class="headerlink" href="#speeding-things-up" title="Permalink to this headline">¶</a></h2>
 <p>The reason this experiment went so poorly is because our data structure
 was not taking advantage of the large amount of numbers encrypted values
 could take on. We fix this as follows:</p>
@@ -302,7 +290,6 @@ not prohibatively long, and see the general trend of the fast scheme.</p>
 <img alt="_images/output_19_0.png" src="_images/output_19_0.png" />
 </div>
 </div>
-</div>
 
 
           </div>
@@ -312,7 +299,7 @@ not prohibatively long, and see the general trend of the fast scheme.</p>
         <div class="sphinxsidebarwrapper"><div class="relations">
 <h3>Related Topics</h3>
 <ul>
-  <li><a href="#">Documentation overview</a><ul>
+  <li><a href="index.html">Documentation overview</a><ul>
   </ul></li>
 </ul>
 </div>
@@ -338,7 +325,7 @@ not prohibatively long, and see the general trend of the fast scheme.</p>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
-      <a href="_sources/index.rst.txt"
+      <a href="_sources/Demo.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
