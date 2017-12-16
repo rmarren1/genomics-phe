@@ -1,0 +1,320 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>gphe.vecphe &#8212; GenomicsPHE 0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for gphe.vecphe</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">phe</span>
+<span class="kn">from</span> <span class="nn">numba</span> <span class="k">import</span> <span class="n">jit</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">_chunks</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Split an array into blocks.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    l : :obj:`list`</span>
+<span class="sd">        The list of numbers</span>
+<span class="sd">    n : int</span>
+<span class="sd">        The block size</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :obj:`list` of :obj:`list`s</span>
+<span class="sd">        A list containing the blocks</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">),</span> <span class="n">n</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">l</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">n</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">_frombase</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a number as an integer from its base representation</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    v : :obj:`list`</span>
+<span class="sd">        The base representation of the number in a :obj:`list`</span>
+<span class="sd">    base : int</span>
+<span class="sd">        The base</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    N : int</span>
+<span class="sd">        The number in base 10 represenation (as an integer)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)):</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">N</span> <span class="o">+</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">B</span>
+        <span class="n">B</span> <span class="o">*=</span> <span class="n">base</span>
+    <span class="k">return</span> <span class="n">N</span>
+
+<span class="k">def</span> <span class="nf">_tobase</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">block</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the base representation of an integer</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : int</span>
+<span class="sd">        The number to convert</span>
+<span class="sd">    base : int</span>
+<span class="sd">        The base</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    v : :obj:`list`</span>
+<span class="sd">        The base representation of the number in a :obj:`list`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">V</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">block</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">block</span><span class="p">):</span>
+        <span class="n">V</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span> <span class="o">%</span> <span class="n">base</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">//</span> <span class="n">base</span>
+    <span class="k">return</span> <span class="n">V</span>
+
+<div class="viewcode-block" id="vecEnc"><a class="viewcode-back" href="../../source/gphe.html#gphe.vecphe.vecEnc">[docs]</a><span class="k">def</span> <span class="nf">vecEnc</span><span class="p">(</span><span class="n">pub</span><span class="p">,</span> <span class="n">V</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Encrypt a vector of numbers using standard Pallier Encryption</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pub : :obj:`PaillierPublicKey`</span>
+<span class="sd">        The public key</span>
+<span class="sd">    V : :obj:`list` of int</span>
+<span class="sd">        The vector to encrypt</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    EV : :obj:`list` of :obj:`EncryptedNumber`</span>
+<span class="sd">        The encrypted numbers</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">pub</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">V</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="vecDec"><a class="viewcode-back" href="../../source/gphe.html#gphe.vecphe.vecDec">[docs]</a><span class="k">def</span> <span class="nf">vecDec</span><span class="p">(</span><span class="n">prv</span><span class="p">,</span> <span class="n">EV</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Decrypt a vector of numbers using standard Pallier Encryption</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    prv : :obj:`PaillierPrivateKey`</span>
+<span class="sd">        The private key</span>
+<span class="sd">    EV : :obj:`list` of :obj:`EncryptedNumber`</span>
+<span class="sd">        The vector to decrypt</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    V : :obj:`list` of int</span>
+<span class="sd">        The decrypted numbers</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">prv</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">EV</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="fvecEnc"><a class="viewcode-back" href="../../source/gphe.html#gphe.vecphe.fvecEnc">[docs]</a><span class="k">def</span> <span class="nf">fvecEnc</span><span class="p">(</span><span class="n">pub</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">block</span> <span class="o">=</span> <span class="mi">128</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Encrypt a vector of numbers using fast Pallier Encryption</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pub : :obj:`PaillierPublicKey`</span>
+<span class="sd">        The public key</span>
+<span class="sd">    V : :obj:`list` of int</span>
+<span class="sd">        The vector to encrypt</span>
+<span class="sd">    base : int</span>
+<span class="sd">        The base of the new number representations</span>
+<span class="sd">    block : int</span>
+<span class="sd">        The block size used to split V</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Ns : :obj:`list` of :obj:`EncryptedNumber`</span>
+<span class="sd">        The encrypted numbers, where each number represents a block</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Vs</span> <span class="o">=</span> <span class="n">_chunks</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
+    <span class="n">Ns</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">V</span> <span class="ow">in</span> <span class="n">Vs</span><span class="p">:</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">_frombase</span><span class="p">(</span><span class="n">V</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
+        <span class="n">Ns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pub</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">Ns</span></div>
+
+<div class="viewcode-block" id="fvecDec"><a class="viewcode-back" href="../../source/gphe.html#gphe.vecphe.fvecDec">[docs]</a><span class="k">def</span> <span class="nf">fvecDec</span><span class="p">(</span><span class="n">prv</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">block</span> <span class="o">=</span> <span class="mi">128</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Decrypt a vector of numbers using fast Pallier Encryption</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    prv : :obj:`PaillierPrivateKey`</span>
+<span class="sd">        The private key</span>
+<span class="sd">    EV : :obj:`list` of :obj:`EncryptedNumber`</span>
+<span class="sd">        The vector to decrypt</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    V : :obj:`list` of int</span>
+<span class="sd">        The decrypted numbers</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">EVs</span> <span class="o">=</span> <span class="p">[</span><span class="n">prv</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">E</span><span class="p">]</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">EV</span> <span class="ow">in</span> <span class="n">EVs</span><span class="p">:</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">_tobase</span><span class="p">(</span><span class="n">EV</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
+        <span class="n">V</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">V</span></div>
+
+<div class="viewcode-block" id="matEnc"><a class="viewcode-back" href="../../source/gphe.html#gphe.vecphe.matEnc">[docs]</a><span class="k">def</span> <span class="nf">matEnc</span><span class="p">(</span><span class="n">pub</span><span class="p">,</span> <span class="n">M</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Encrypt a matrix of numbers using standard Pallier Encryption</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pub : :obj:`PaillierPublicKey`</span>
+<span class="sd">        The public key</span>
+<span class="sd">    M : :obj:`ndarray` of shape (d x n) of int</span>
+<span class="sd">        The matrix to encrypt</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    EM : :obj:`list` of :obj:`list` of :obj:`EncryptedNumber`</span>
+<span class="sd">        The encrypted numbers matrix</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">vecEnc</span><span class="p">(</span><span class="n">pub</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span> <span class="k">for</span> <span class="n">V</span> <span class="ow">in</span> <span class="n">M</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="fmatEnc"><a class="viewcode-back" href="../../source/gphe.html#gphe.vecphe.fmatEnc">[docs]</a><span class="k">def</span> <span class="nf">fmatEnc</span><span class="p">(</span><span class="n">pub</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Encrypt a matrix of numbers using fast Pallier Encryption</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pub : :obj:`PaillierPublicKey`</span>
+<span class="sd">        The public key</span>
+<span class="sd">    M : :obj:`ndarray` of shape (d x n) of int</span>
+<span class="sd">        The matrix to encrypt</span>
+<span class="sd">    base : int</span>
+<span class="sd">        The base of the new number representations</span>
+<span class="sd">    block : int</span>
+<span class="sd">        The block size used to split V</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    EM : :obj:`list` of :obj:`list` of :obj:`EncryptedNumber`</span>
+<span class="sd">        The encrypted numbers matrix</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">fvecEnc</span><span class="p">(</span><span class="n">pub</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">)</span> <span class="k">for</span> <span class="n">V</span> <span class="ow">in</span> <span class="n">M</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="matDec"><a class="viewcode-back" href="../../source/gphe.html#gphe.vecphe.matDec">[docs]</a><span class="k">def</span> <span class="nf">matDec</span><span class="p">(</span><span class="n">prv</span><span class="p">,</span> <span class="n">EM</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Decrypt a matrix of numbers using standard Pallier Encryption</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    prv : :obj:`PaillierPrivateKey`</span>
+<span class="sd">        The private key</span>
+<span class="sd">    EM : :obj:`list` of :obj:`list` of :obj:`EncryptedNumber` with shape </span>
+<span class="sd">         (d x n) where d is dimensions and n is samples</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    M : :obj:`ndarray` of int</span>
+<span class="sd">        The decrypted matrix</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="p">[</span><span class="n">vecDec</span><span class="p">(</span><span class="n">prv</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span> <span class="k">for</span> <span class="n">V</span> <span class="ow">in</span> <span class="n">EM</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">M</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">T</span></div>
+
+<div class="viewcode-block" id="fmatDec"><a class="viewcode-back" href="../../source/gphe.html#gphe.vecphe.fmatDec">[docs]</a><span class="k">def</span> <span class="nf">fmatDec</span><span class="p">(</span><span class="n">prv</span><span class="p">,</span> <span class="n">EM</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Decrypt a matrix of numbers using fast Pallier Encryption</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    prv : :obj:`PaillierPrivateKey`</span>
+<span class="sd">        The private key</span>
+<span class="sd">    EM : :obj:`list` of :obj:`list` of :obj:`EncryptedNumber` with shape </span>
+<span class="sd">         (d x n) where d is dimensions and n is samples</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    M : :obj:`ndarray` of int</span>
+<span class="sd">        The decrypted matrix</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="p">[</span><span class="n">fvecDec</span><span class="p">(</span><span class="n">prv</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">)</span> <span class="k">for</span> <span class="n">V</span> <span class="ow">in</span> <span class="n">EM</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">M</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">T</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Ryan Marren and John Wilson.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

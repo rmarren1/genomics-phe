@@ -4,38 +4,38 @@ import numpy as np
 
 @jit
 def _chunks(l, n):
-    """ Split an array into blocks.
+    """Split an array into blocks.
 
-        Parameters
-        ----------
-        l : :obj:`list`
-            The list of numbers
-        n : int
-            The block size
+    Parameters
+    ----------
+    l : :obj:`list`
+        The list of numbers
+    n : int
+        The block size
 
-        Returns
-        -------
-        :obj:`list` of :obj:`list`s
-            A list containing the blocks
+    Returns
+    -------
+    :obj:`list` of :obj:`list`s
+        A list containing the blocks
 
     """
     for i in range(0, len(l), n):
         yield l[i:i + n]
 
 def _frombase(v, base):
-    """ Return a number as an integer from its base representation
+    """Return a number as an integer from its base representation
 
-        Parameters
-        ----------
-        v : :obj:`list`
-            The base representation of the number in a :obj:`list`
-        base : int
-            The base
+    Parameters
+    ----------
+    v : :obj:`list`
+        The base representation of the number in a :obj:`list`
+    base : int
+        The base
 
-        Returns
-        -------
-        N : int
-            The number in base 10 represenation (as an integer)
+    Returns
+    -------
+    N : int
+        The number in base 10 represenation (as an integer)
 
     """
     N = 0
@@ -46,19 +46,20 @@ def _frombase(v, base):
     return N
 
 def _tobase(x, base, block):
-    """ Return the base representation of an integer
+    """Return the base representation of an integer
 
-        Parameters
-        ----------
-        x : int
-            The number to convert
-        base : int
-            The base
+    Parameters
+    ----------
+    x : int
+        The number to convert
+    base : int
+        The base
 
-        Returns
-        -------
-        v : :obj:`list`
-            The base representation of the number in a :obj:`list`
+    Returns
+    -------
+    v : :obj:`list`
+        The base representation of the number in a :obj:`list`
+
     """
 
     V = [0] * block
@@ -68,57 +69,60 @@ def _tobase(x, base, block):
     return V
 
 def vecEnc(pub, V):
-    """ Encrypt a vector of numbers using standard Pallier Encryption
+    """Encrypt a vector of numbers using standard Pallier Encryption
 
-        Parameters
-        ----------
-        pub : :obj:`PaillierPublicKey`
-            The public key
-        V : :obj:`list` of int
-            The vector to encrypt
+    Parameters
+    ----------
+    pub : :obj:`PaillierPublicKey`
+        The public key
+    V : :obj:`list` of int
+        The vector to encrypt
 
-        Returns
-        -------
-        EV : :obj:`list` of :obj:`EncryptedNumber`
-            The encrypted numbers
+    Returns
+    -------
+    EV : :obj:`list` of :obj:`EncryptedNumber`
+        The encrypted numbers
+
     """
     return [pub.encrypt(x) for x in V]
 
 def vecDec(prv, EV):
-    """ Decrypt a vector of numbers using standard Pallier Encryption
+    """Decrypt a vector of numbers using standard Pallier Encryption
 
-        Parameters
-        ----------
-        prv : :obj:`PaillierPrivateKey`
-            The private key
-        EV : :obj:`list` of :obj:`EncryptedNumber`
-            The vector to decrypt
+    Parameters
+    ----------
+    prv : :obj:`PaillierPrivateKey`
+        The private key
+    EV : :obj:`list` of :obj:`EncryptedNumber`
+        The vector to decrypt
 
-        Returns
-        -------
-        V : :obj:`list` of int
-            The decrypted numbers
+    Returns
+    -------
+    V : :obj:`list` of int
+        The decrypted numbers
+    
     """
     return [prv.decrypt(x) for x in EV]
 
 def fvecEnc(pub, V, base=128, block = 128):
-    """ Encrypt a vector of numbers using fast Pallier Encryption
+    """Encrypt a vector of numbers using fast Pallier Encryption
 
-        Parameters
-        ----------
-        pub : :obj:`PaillierPublicKey`
-            The public key
-        V : :obj:`list` of int
-            The vector to encrypt
-        base : int
-            The base of the new number representations
-        block : int
-            The block size used to split V
+    Parameters
+    ----------
+    pub : :obj:`PaillierPublicKey`
+        The public key
+    V : :obj:`list` of int
+        The vector to encrypt
+    base : int
+        The base of the new number representations
+    block : int
+        The block size used to split V
 
-        Returns
-        -------
-        Ns : :obj:`list` of :obj:`EncryptedNumber`
-            The encrypted numbers, where each number represents a block
+    Returns
+    -------
+    Ns : :obj:`list` of :obj:`EncryptedNumber`
+        The encrypted numbers, where each number represents a block
+
     """
     Vs = _chunks(V, block)
     Ns = []
@@ -128,19 +132,20 @@ def fvecEnc(pub, V, base=128, block = 128):
     return Ns
 
 def fvecDec(prv, E, base=128, block = 128):
-    """ Decrypt a vector of numbers using fast Pallier Encryption
+    """Decrypt a vector of numbers using fast Pallier Encryption
 
-        Parameters
-        ----------
-        prv : :obj:`PaillierPrivateKey`
-            The private key
-        EV : :obj:`list` of :obj:`EncryptedNumber`
-            The vector to decrypt
+    Parameters
+    ----------
+    prv : :obj:`PaillierPrivateKey`
+        The private key
+    EV : :obj:`list` of :obj:`EncryptedNumber`
+        The vector to decrypt
 
-        Returns
-        -------
-        V : :obj:`list` of int
-            The decrypted numbers
+    Returns
+    -------
+    V : :obj:`list` of int
+        The decrypted numbers
+    
     """
     EVs = [prv.decrypt(x) for x in E]
     V = []
@@ -150,77 +155,81 @@ def fvecDec(prv, E, base=128, block = 128):
     return V
 
 def matEnc(pub, M):
-    """ Encrypt a matrix of numbers using standard Pallier Encryption
+    """Encrypt a matrix of numbers using standard Pallier Encryption
 
-        Parameters
-        ----------
-        pub : :obj:`PaillierPublicKey`
-            The public key
-        M : :obj:`ndarray` of shape (d x n) of int
-            The matrix to encrypt
+    Parameters
+    ----------
+    pub : :obj:`PaillierPublicKey`
+        The public key
+    M : :obj:`ndarray` of shape (d x n) of int
+        The matrix to encrypt
 
-        Returns
-        -------
-        EM : :obj:`list` of :obj:`list` of :obj:`EncryptedNumber`
-            The encrypted numbers matrix
+    Returns
+    -------
+    EM : :obj:`list` of :obj:`list` of :obj:`EncryptedNumber`
+        The encrypted numbers matrix
+
     """
     M = M.T.tolist()
     return [vecEnc(pub, V) for V in M]
 
 def fmatEnc(pub, M, base=128, block=128):
-    """ Encrypt a matrix of numbers using fast Pallier Encryption
+    """Encrypt a matrix of numbers using fast Pallier Encryption
 
-        Parameters
-        ----------
-        pub : :obj:`PaillierPublicKey`
-            The public key
-        M : :obj:`ndarray` of shape (d x n) of int
-            The matrix to encrypt
-        base : int
-            The base of the new number representations
-        block : int
-            The block size used to split V
+    Parameters
+    ----------
+    pub : :obj:`PaillierPublicKey`
+        The public key
+    M : :obj:`ndarray` of shape (d x n) of int
+        The matrix to encrypt
+    base : int
+        The base of the new number representations
+    block : int
+        The block size used to split V
 
-        Returns
-        -------
-        EM : :obj:`list` of :obj:`list` of :obj:`EncryptedNumber`
-            The encrypted numbers matrix
+    Returns
+    -------
+    EM : :obj:`list` of :obj:`list` of :obj:`EncryptedNumber`
+        The encrypted numbers matrix
+
     """
     M = M.T.tolist()
     return [fvecEnc(pub, V, base=base, block=block) for V in M]
 
 def matDec(prv, EM):
-    """ Decrypt a matrix of numbers using standard Pallier Encryption
+    """Decrypt a matrix of numbers using standard Pallier Encryption
 
-        Parameters
-        ----------
-        prv : :obj:`PaillierPrivateKey`
-            The private key
-        EM : :obj:`list` of :obj:`list` of :obj:`EncryptedNumber` with shape 
-             (d x n) where d is dimensions and n is samples
+    Parameters
+    ----------
+    prv : :obj:`PaillierPrivateKey`
+        The private key
+    EM : :obj:`list` of :obj:`list` of :obj:`EncryptedNumber` with shape 
+         (d x n) where d is dimensions and n is samples
 
-        Returns
-        -------
-        M : :obj:`ndarray` of int
-            The decrypted matrix
+    Returns
+    -------
+    M : :obj:`ndarray` of int
+        The decrypted matrix
+    
     """
     M = [vecDec(prv, V) for V in EM]
     return np.array(M).astype(int).T
 
 def fmatDec(prv, EM, base=128, block=128):
-    """ Decrypt a matrix of numbers using fast Pallier Encryption
+    """Decrypt a matrix of numbers using fast Pallier Encryption
 
-        Parameters
-        ----------
-        prv : :obj:`PaillierPrivateKey`
-            The private key
-        EM : :obj:`list` of :obj:`list` of :obj:`EncryptedNumber` with shape 
-             (d x n) where d is dimensions and n is samples
+    Parameters
+    ----------
+    prv : :obj:`PaillierPrivateKey`
+        The private key
+    EM : :obj:`list` of :obj:`list` of :obj:`EncryptedNumber` with shape 
+         (d x n) where d is dimensions and n is samples
 
-        Returns
-        -------
-        M : :obj:`ndarray` of int
-            The decrypted matrix
+    Returns
+    -------
+    M : :obj:`ndarray` of int
+        The decrypted matrix
+
     """
     M = [fvecDec(prv, V, base=base, block=block) for V in EM]
     return np.array(M).astype(int).T
