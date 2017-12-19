@@ -114,7 +114,7 @@ Empirically, we can see the this is a large slow down.
 
 .. parsed-literal::
 
-    CPU times: user 30.6 s, sys: 28 ms, total: 30.6 s
+    CPU times: user 30.7 s, sys: 29 ms, total: 30.7 s
     Wall time: 30.9 s
 
 
@@ -310,3 +310,158 @@ not prohibatively long, and see the general trend of the fast scheme.
 
 .. image:: output_19_0.png
 
+
+Matrix Operations
+~~~~~~~~~~~~~~~~~
+
+Now, we demonstrate some matrix operations which can be computed on the
+encrypted data.
+
+.. code:: ipython3
+
+    D, n = (4, 2)
+    M = np.random.binomial(1, .5, (D, n))
+    print("(D, n) =", (D, n))
+    E_Mfast = vphe.fmatEnc(p, M, block=4)
+    M
+
+
+.. parsed-literal::
+
+    (D, n) = (4, 2)
+
+
+
+
+.. parsed-literal::
+
+    array([[0, 1],
+           [0, 0],
+           [0, 0],
+           [1, 0]])
+
+
+
+Row Sum and Mean
+''''''''''''''''
+
+.. code:: ipython3
+
+    Encrypted_Row_Sum = vphe.matRowSum(E_Mfast)
+
+.. code:: ipython3
+
+    sm = vphe.fvecDec(s, Encrypted_Row_Sum, block = 4)
+    print("sum", sm)
+    print("mean", [x/n for x in sm])
+
+
+.. parsed-literal::
+
+    sum [1, 0, 0, 1]
+    mean [0.5, 0.0, 0.0, 0.5]
+
+
+Weighted Row Sum and Mean
+'''''''''''''''''''''''''
+
+.. code:: ipython3
+
+    Encrypted_Weighted_Row_Sum = vphe.matRowWeightedSum(E_Mfast, [2, 4])
+
+.. code:: ipython3
+
+    sm = vphe.fvecDec(s, Encrypted_Weighted_Row_Sum, block = 4)
+    print("sum", sm)
+    print("mean", [x/n for x in sm])
+
+
+.. parsed-literal::
+
+    sum [4, 0, 0, 2]
+    mean [2.0, 0.0, 0.0, 1.0]
+
+
+Dot Product with Scalar Matrix
+''''''''''''''''''''''''''''''
+
+.. code:: ipython3
+
+    N = np.array([[1, 2, 3, 4], [5, 6, 7, 8]], int)
+    print("Scalar Matrix")
+    print(N)
+    Encrypted_Dot_Product = vphe.matDotProduct(E_Mfast, N)
+
+
+.. parsed-literal::
+
+    [[1 2 3 4]
+     [5 6 7 8]]
+
+
+.. code:: ipython3
+
+    sm = [vphe.fvecDec(s, E, block = 4) for E in Encrypted_Dot_Product]
+    print(M)
+    print("dot product with")
+    print(N)
+    print("is")
+    print(np.array(sm, int))
+
+
+.. parsed-literal::
+
+    [[0 1]
+     [0 0]
+     [0 0]
+     [1 0]]
+    dot product with
+    [[1 2 3 4]
+     [5 6 7 8]]
+    is
+    [[5 0 0 1]
+     [6 0 0 2]
+     [7 0 0 3]
+     [8 0 0 4]]
+
+
+Applications to Genomics
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Suppose we have a :math:`D` by :math:`n` matrix where :math:`D` is the
+number of possible genetic mutations considered in a population and
+:math:`n` is the number of people in the population.
+
+Further, suppose :math:`n` is relatively small (<100) and each sample
+point is a person with some genetic disorder.
+
+A simple test to figure out which mutation is the likely cause of the
+disorder in the population is to find the mutation with the highest
+count across the population (e.g., the row sum of the :math:`D` by
+:math:`n` matrix).
+
+While an operation like this would not require outsourcing computation
+to the cloud (which is a common application of partially or fully
+homomorphic encryption schemes), this property does allow for a
+scientific convenience. Since genetic data is protected, scarce, and
+valuable, scientific bodies often do not make the data public.
+
+The Paillier scheme allows for this simple counting test to be
+accomplished on a set of shared data from :math:`k` scientific groups,
+where each group only knows the true values of their own data. This can
+be done as follows:
+
+Suppose at a meeting (conference, ect.), :math:`k` groups meet up and
+generate a public / private key pair. The private key is split into
+:math:`k` chunks and each group gets a chunk of the private key (we can
+blow up the private key to :math:`k` times its original size, so that
+even if :math:`k-1` of the organizations are in cahoots, they could not
+guess the :math:`k`'th organizations private key).
+
+With this setup, they could keep a public database with the
+concatenation of all :math:`k` groups data encrypted under the public
+key. Then, they can at any point come to an aggreement to sum together
+all of the rows of the database and decrypt the result. They can all
+find out the result, but without one group doing something shady at a
+group meeting and stealing everyone else's private keys, no one group
+can know all of the raw data that was used to produce the sum.
