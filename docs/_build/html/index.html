@@ -146,7 +146,7 @@ value she can have in her result is <span class="math">\(100\)</span>).</p>
 <span class="n">E_Mslow</span> <span class="o">=</span> <span class="n">vphe</span><span class="o">.</span><span class="n">matEnc</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">CPU</span> <span class="n">times</span><span class="p">:</span> <span class="n">user</span> <span class="mf">30.6</span> <span class="n">s</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="mi">28</span> <span class="n">ms</span><span class="p">,</span> <span class="n">total</span><span class="p">:</span> <span class="mf">30.6</span> <span class="n">s</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">CPU</span> <span class="n">times</span><span class="p">:</span> <span class="n">user</span> <span class="mf">30.7</span> <span class="n">s</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="mi">29</span> <span class="n">ms</span><span class="p">,</span> <span class="n">total</span><span class="p">:</span> <span class="mf">30.7</span> <span class="n">s</span>
 <span class="n">Wall</span> <span class="n">time</span><span class="p">:</span> <span class="mf">30.9</span> <span class="n">s</span>
 </pre></div>
 </div>
@@ -301,6 +301,117 @@ not prohibatively long, and see the general trend of the fast scheme.</p>
 </div>
 <img alt="_images/output_19_0.png" src="_images/output_19_0.png" />
 </div>
+</div>
+<div class="section" id="matrix-operations">
+<h2>Matrix Operations<a class="headerlink" href="#matrix-operations" title="Permalink to this headline">¶</a></h2>
+<p>Now, we demonstrate some matrix operations which can be computed on the
+encrypted data.</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">D</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;(D, n) =&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+<span class="n">E_Mfast</span> <span class="o">=</span> <span class="n">vphe</span><span class="o">.</span><span class="n">fmatEnc</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">M</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+       <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+</pre></div>
+</div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">Encrypted_Row_Sum</span> <span class="o">=</span> <span class="n">vphe</span><span class="o">.</span><span class="n">matRowSum</span><span class="p">(</span><span class="n">E_Mfast</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">sm</span> <span class="o">=</span> <span class="n">vphe</span><span class="o">.</span><span class="n">fvecDec</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">Encrypted_Row_Sum</span><span class="p">,</span> <span class="n">block</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="n">sm</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="o">/</span><span class="n">n</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sm</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">sum</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">mean</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">Encrypted_Weighted_Row_Sum</span> <span class="o">=</span> <span class="n">vphe</span><span class="o">.</span><span class="n">matRowWeightedSum</span><span class="p">(</span><span class="n">E_Mfast</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">sm</span> <span class="o">=</span> <span class="n">vphe</span><span class="o">.</span><span class="n">fvecDec</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">Encrypted_Weighted_Row_Sum</span><span class="p">,</span> <span class="n">block</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="n">sm</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="o">/</span><span class="n">n</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sm</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">sum</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="n">mean</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">]],</span> <span class="nb">int</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Scalar Matrix&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="n">Encrypted_Dot_Product</span> <span class="o">=</span> <span class="n">vphe</span><span class="o">.</span><span class="n">matDotProduct</span><span class="p">(</span><span class="n">E_Mfast</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">5</span> <span class="mi">6</span> <span class="mi">7</span> <span class="mi">8</span><span class="p">]]</span>
+</pre></div>
+</div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">sm</span> <span class="o">=</span> <span class="p">[</span><span class="n">vphe</span><span class="o">.</span><span class="n">fvecDec</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">block</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span> <span class="k">for</span> <span class="n">E</span> <span class="ow">in</span> <span class="n">Encrypted_Dot_Product</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;dot product with&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;is&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="mi">0</span> <span class="mi">1</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">0</span> <span class="mi">0</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">0</span> <span class="mi">0</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">1</span> <span class="mi">0</span><span class="p">]]</span>
+<span class="n">dot</span> <span class="n">product</span> <span class="k">with</span>
+<span class="p">[[</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">5</span> <span class="mi">6</span> <span class="mi">7</span> <span class="mi">8</span><span class="p">]]</span>
+<span class="ow">is</span>
+<span class="p">[[</span><span class="mi">5</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">1</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">6</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">2</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">7</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">3</span><span class="p">]</span>
+ <span class="p">[</span><span class="mi">8</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">4</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="applications-to-genomics">
+<h2>Applications to Genomics<a class="headerlink" href="#applications-to-genomics" title="Permalink to this headline">¶</a></h2>
+<p>Suppose we have a <span class="math">\(D\)</span> by <span class="math">\(n\)</span> matrix where <span class="math">\(D\)</span> is the
+number of possible genetic mutations considered in a population and
+<span class="math">\(n\)</span> is the number of people in the population.</p>
+<p>Further, suppose <span class="math">\(n\)</span> is relatively small (&lt;100) and each sample
+point is a person with some genetic disorder.</p>
+<p>A simple test to figure out which mutation is the likely cause of the
+disorder in the population is to find the mutation with the highest
+count across the population (e.g., the row sum of the <span class="math">\(D\)</span> by
+<span class="math">\(n\)</span> matrix).</p>
+<p>While an operation like this would not require outsourcing computation
+to the cloud (which is a common application of partially or fully
+homomorphic encryption schemes), this property does allow for a
+scientific convenience. Since genetic data is protected, scarce, and
+valuable, scientific bodies often do not make the data public.</p>
+<p>The Paillier scheme allows for this simple counting test to be
+accomplished on a set of shared data from <span class="math">\(k\)</span> scientific groups,
+where each group only knows the true values of their own data. This can
+be done as follows:</p>
+<p>Suppose at a meeting (conference, ect.), <span class="math">\(k\)</span> groups meet up and
+generate a public / private key pair. The private key is split into
+<span class="math">\(k\)</span> chunks and each group gets a chunk of the private key (we can
+blow up the private key to <span class="math">\(k\)</span> times its original size, so that
+even if <span class="math">\(k-1\)</span> of the organizations are in cahoots, they could not
+guess the <span class="math">\(k\)</span>‘th organizations private key).</p>
+<p>With this setup, they could keep a public database with the
+concatenation of all <span class="math">\(k\)</span> groups data encrypted under the public
+key. Then, they can at any point come to an aggreement to sum together
+all of the rows of the database and decrypt the result. They can all
+find out the result, but without one group doing something shady at a
+group meeting and stealing everyone else’s private keys, no one group
+can know all of the raw data that was used to produce the sum.</p>
 </div>
 </div>
 
