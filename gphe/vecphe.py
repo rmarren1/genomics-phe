@@ -1,6 +1,7 @@
 import phe
 from numba import jit
 import numpy as np
+from functools import reduce
 
 @jit
 def _chunks(l, n):
@@ -233,3 +234,50 @@ def fmatDec(prv, EM, base=128, block=128):
     """
     M = [fvecDec(prv, V, base=base, block=block) for V in EM]
     return np.array(M).astype(int).T
+
+def matRowSum(M):
+    """Take the row sum of an encrypted matrix
+
+    Parameters
+    ----------
+    M : The encrypted matrix
+
+    Returns
+    -------
+    n : An encrypted number representing the sum vector
+
+    """
+    return (np.sum(M, axis=0)).tolist()
+
+def matRowWeightedSum(M, w):
+    """Take the row sum of an encrypted matrix
+
+    Parameters
+    ----------
+    M : The encrypted matrix
+    w : The weight vector
+
+    Returns
+    -------
+    n : An encrypted number representing the sum vector
+
+    """
+    Mw = zip(M, w)
+    Mw = [[w * y for w in x] for x, y in Mw]
+    return (np.sum(Mw, axis=0)).tolist()
+
+def matDotProduct(M, N):
+    """Take the dot product with a known matrix
+
+    Parameters
+    ----------
+    M : The encrypted matrix
+    N : The known matrix
+
+    Returns
+    -------
+    V : An encrypted number vector representing the sum vectors
+
+    """
+    N = N.T.tolist()
+    return [matRowWeightedSum(M, w) for w in N]
