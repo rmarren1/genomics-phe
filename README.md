@@ -1,6 +1,6 @@
 # genomics-phe
 
-Documentation: https://rmarren1.github.io/genomics-phe
+Documentation (Write Up): https://rmarren1.github.io/genomics-phe
 
 Module Docs: https://rmarren1.github.io/genomics-phe/source/gphe.html#module-gphe.vecphe
 
